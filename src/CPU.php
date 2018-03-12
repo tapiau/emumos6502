@@ -41,19 +41,19 @@ class CPU
     /* INTERNAL STATUS */
     private $ticks = 0;
     /** @var opCodeList */
-    private $opCodeList;
+    private $opCodeDecoder;
 
     public function __construct(RAM $ram)
     {
         $this->ram = $ram;
-        $this->PC = $this->ram->readWord(CPU::VECTOR_RESET);
+        $this->PC = $this->readWord(CPU::VECTOR_RESET);
 
-        $this->opCodeList = new opCodeList();
+        $this->opCodeDecoder = new opCodeList();
     }
 
     public function reset()
     {
-        $this->PC = $this->ram->readWord(CPU::VECTOR_RESET);
+        $this->PC = $this->readWord(CPU::VECTOR_RESET);
 
         $this->A = 0;
         $this->X = 0;
@@ -90,7 +90,16 @@ class CPU
     public function executeOne()
     {
         $byte = $this->ram->read($this->PC);
-        $op = $this->opCodeList->decode($byte);
+
+        try
+        {
+            $op = $this->opCodeDecoder->decode($byte);
+        }
+        catch(Exception $e)
+        {
+            printr($this->printRegs());
+            die("FATAL ERROR: ".$e->getMessage());
+        }
 
         $this->disasm($this->PC);
 
@@ -170,7 +179,7 @@ class CPU
 
         $this->{$reg} = $this->memoryRead($op->mode,$this->PC+1);
 
-        $this->movePC($op->len);
+        $this->movePC($op->bytes);
     }
 
     public function saveRegister(opCode $op)
@@ -179,13 +188,13 @@ class CPU
 
         $this->memoryWrite($op->mode,$this->PC+1,$this->{$reg});
 
-        $this->movePC($op->len);
+        $this->movePC($op->bytes);
     }
 
     public function disasm($addr)
     {
         $byte = $this->ram->read($addr);
-        $op = $this->opCodeList->decode($byte);
+        $op = $this->opCodeDecoder->decode($byte);
 
         $line = $op->mnemonic;
         $line .= ' ';

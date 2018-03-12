@@ -11,7 +11,8 @@ class opCode
     public $mnemonic;
     public $call;
     public $mode;
-    public $len;
+    public $bytes;
+    public $ticks;
     public $code;
 
     public function __construct($code,$opCode)
@@ -22,5 +23,16 @@ class opCode
             $this->{$key} = $value;
         }
     }
-
+    public function getAAA()
+    {
+        return ($this->code & 0b11100000)>>5;
+    }
+    public function getBBB()
+    {
+        return ($this->code & 0b00011100)>>2;
+    }
+    public function getCC()
+    {
+        return $this->code & 0b00000011;
+    }
 }

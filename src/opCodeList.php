@@ -9,59 +9,98 @@
 class opCodeList
 {
     private $map = [
+        0x00=>[
+            'mnemonic'=>'BRK',
+            'call'=>'interrupt',
+            'mode'=>'',
+            'bytes'=>1,
+            'ticks'=>7
+        ],
+        0x01=>[
+            'mnemonic'=>'ORA',
+            'call'=>'math',
+            'mode'=>'izx',
+            'bytes'=>2,
+            'ticks'=>6
+        ],
+        0x02=>[ // 65C816
+            'mnemonic'=>'KIL',
+            'call'=>'interrupt',
+            'mode'=>'',
+            'bytes'=>1,
+            'ticks'=>0
+        ],
+        0x03=>[ // 65C816
+            'mnemonic'=>'KIL',
+            'call'=>'interrupt',
+            'mode'=>'izx',
+            'bytes'=>1,
+            'ticks'=>0
+        ],
+        0x04=>[ // 65C816
+            'mnemonic'=>'NOP',
+            'call'=>'interrupt',
+            'mode'=>'imm',
+            'bytes'=>1,
+            'ticks'=>0
+        ],
+
+
+
+
         0xA9=>[
             'mnemonic'=>'LDA',
             'call'=>'loadRegister',
             'mode'=>'imm',
-            'len'=>2
+            'bytes'=>2
         ],
         0xA2=>[
             'mnemonic'=>'LDX',
             'call'=>'loadRegister',
             'mode'=>'imm',
-            'len'=>2
+            'bytes'=>2
         ],
         0xA0=>[
             'mnemonic'=>'LDY',
             'call'=>'loadRegister',
             'mode'=>'imm',
-            'len'=>2
+            'bytes'=>2
         ],
         0xA5=>[
             'mnemonic'=>'LDA',
             'call'=>'loadRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ],
         0xA6=>[
             'mnemonic'=>'LDX',
             'call'=>'loadRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ],
         0xA4=>[
             'mnemonic'=>'LDY',
             'call'=>'loadRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ],
         0x85=>[
             'mnemonic'=>'STA',
             'call'=>'saveRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ],
         0x86=>[
             'mnemonic'=>'STX',
             'call'=>'saveRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ],
         0x84=>[
             'mnemonic'=>'STY',
             'call'=>'saveRegister',
             'mode'=>'zp',
-            'len'=>2
+            'bytes'=>2
         ]
     ];
 
