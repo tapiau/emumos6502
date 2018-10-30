@@ -6,13 +6,19 @@
  * Time: 20:53
  */
 
-class CPU
+class CPU_6502 extends CPU
 {
-    /** @var Memory */
+    const VECTOR_NMI = 0xFFFA;
+    const VECTOR_RESET = 0xFFFC;
+    const VECTOR_IRQ = 0xFFFE;
+
+    /** @var RAM */
     private $memory;
 
     /* REGISTERS */
     private $A = 0;
+    private $X = 0;
+    private $Y = 0;
     private $SP = 0x0100;
     private $PC = 0x0000;
 
@@ -37,23 +43,29 @@ class CPU
     /** @var opCodeList */
     private $opCodeDecoder;
 
-    public function __construct($opCodeDecoder)
+    public function __construct()
     {
-        $self = get_called_class();
-        $this->PC = $this->readWord($self::VECTOR_RESET);
+        parent::__construct(new CPU_6502_opCodeList());
+    }
 
-        $this->opCodeDecoder = $opCodeDecoder;
+    public function setMemory(MemoryInterface $memory)
+    {
+        $this->memory = $memory;
+    }
+
+    public function init()
+    {
+        $this->PC = $this->readWord(CPU::VECTOR_RESET);
+        $this->opCodeDecoder = new opCodeList();
     }
 
     public function reset()
     {
-        $self = get_called_class();
-
-        $this->PC = $this->readWord($self::VECTOR_RESET);
+        $this->PC = $this->readWord(CPU::VECTOR_RESET);
 
         $this->A = 0;
         $this->X = 0;
-        $this->SP = self::CONST_SP;
+        $this->SP = 0x0100;
 
         $this->N = false;
         $this->V = false;
@@ -76,7 +88,7 @@ class CPU
     }
     public function setSP($address)
     {
-        $this->SP = $address;
+        $this->SP = ($address & 0x00FF) + 0x0100;
     }
     public function moveSP($bytes)
     {
@@ -85,7 +97,7 @@ class CPU
 
     public function executeOne()
     {
-        $byte = $this->ram->read($this->PC);
+        $byte = $this->memory->read($this->PC);
 
         try
         {

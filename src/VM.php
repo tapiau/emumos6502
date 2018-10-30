@@ -8,20 +8,26 @@
 
 class VM
 {
-    /** @var RAM */
-    private $ram;
+    /** @var Memory */
+    private $memory;
 
     /** @var CPU */
     private $cpu;
 
 
-    public function __construct()
+    public function setMemory(MemoryInterface $memory)
     {
-        $this->ram = new RAM();
-        $this->cpu = new CPU($this->ram);
+        $this->memory = $memory;
     }
 
-    public function loadFileToRam($file,$addr)
+    public function setCPU(CPUInterface $cpu)
+    {
+        $this->cpu = $cpu;
+        $this->cpu->setMemory($this->memory);
+        $this->cpu->init();
+    }
+
+    public function loadFileToMemory($file,$addr)
     {
         $file = fopen($file,"r");
 
@@ -29,7 +35,7 @@ class VM
         {
             $byte = ord(fread($file,1));
 
-            $this->ram->write($addr,$byte);
+            $this->memory->write($addr,$byte);
             $addr++;
         }
 
